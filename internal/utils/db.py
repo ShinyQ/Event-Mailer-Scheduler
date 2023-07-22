@@ -3,10 +3,18 @@ from internal.utils.config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODI
 
 db = SQLAlchemy()
 
-def init_db(app):
-    app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
+class InitDB:
+    def __init__(self, app=None):
+        self.app = app
+        if app is not None:
+            self.init_app(app)
 
-    db.init_app(app)
-    app.app_context().push()
-    db.create_all()
+    def init_app(self, app):
+        self.app = app
+        app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
+
+        db.init_app(app)
+
+        with app.app_context():
+            db.create_all()

@@ -1,12 +1,12 @@
 from internal.models.email import Email
 from internal.utils.db import db
 from internal.schemas.email_schema import EmailSchema
-
-
+from internal.utils.mailer import send_email
 class EmailService:
     @staticmethod
     def create_email(data):
         try:
+            print(data)
             errors = EmailSchema().validate(data)
 
             if errors:
@@ -23,6 +23,11 @@ class EmailService:
                 email_content=email_content,
                 timestamp=timestamp
             )
+
+            subject = "PyCon ID 2023"
+            recipients = ["kurniadiahmadwijaya@gmail.com", "kurniadiwijaya50@gmail.com"]
+            body = "PyCon Hadir Kembali 🔥"
+            send_email(subject, recipients, body)
 
             db.session.add(email)
             db.session.commit()

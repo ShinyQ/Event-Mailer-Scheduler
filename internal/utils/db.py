@@ -15,6 +15,3 @@ class InitDB:
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 
         db.init_app(app)
-
-        with app.app_context():
-            db.create_all()

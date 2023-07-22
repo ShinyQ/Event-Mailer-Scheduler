@@ -2,11 +2,11 @@ from internal.models.email import Email
 from internal.utils.db import db
 from internal.schemas.email_schema import EmailSchema
 from internal.utils.mailer import send_email
+
 class EmailService:
     @staticmethod
     def create_email(data):
         try:
-            print(data)
             errors = EmailSchema().validate(data)
 
             if errors:

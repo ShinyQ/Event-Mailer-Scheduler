@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from internal.utils.db import InitDB, db
 from internal.utils.mailer import Mailer
 from internal.utils.errors import ErrorHandling
-from .views.email_controller import email_bp
+from internal.routers import Routers
 
 load_dotenv()
 
@@ -15,7 +15,6 @@ def create_app():
     InitDB(app)
     Migrate(app, db)
     ErrorHandling(app)
-
-    app.register_blueprint(email_bp)
+    Routers(app).init_routers()
 
     return app

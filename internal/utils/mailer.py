@@ -8,7 +8,6 @@ from internal.utils.config import (
     MAIL_PASSWORD
 )
 
-
 class Mailer:
     mail = None
 

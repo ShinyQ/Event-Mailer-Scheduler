@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "automatic-mail-service"
+version = "0.1.0"
+description = "App To Handle Event Mail Automation"
+authors = ["Kurniadi Ahmad Wijaya <kurniadiahmadwijaya@gmail.com>"]
+readme = "README.md"
+packages = [{include = "automatic_mail_service"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^2.3.2"
+sqlalchemy = "^2.0.19"
+flask-migrate = "^4.0.4"
+python-dotenv = "^1.0.0"
+flask-sqlalchemy = "^3.0.5"
+psycopg2 = "^2.9.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

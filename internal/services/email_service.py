@@ -2,29 +2,43 @@ from internal.models.email import Email
 from internal.utils.db import db
 from internal.schemas.email_schema import EmailSchema
 
-email_schema = EmailSchema()
-
 
 class EmailService:
     @staticmethod
     def create_email(data):
-        errors = email_schema.validate(data)
-        if errors:
-            return None, errors
+        try:
+            errors = EmailSchema().validate(data)
 
-        event_id = data['event_id']
-        email_subject = data['email_subject']
-        email_content = data['email_content']
-        timestamp = data['timestamp']
+            if errors:
+                return None, errors
 
-        email = Email(
-            event_id=event_id,
-            email_subject=email_subject,
-            email_content=email_content,
-            timestamp=timestamp
-        )
+            event_id = data['event_id']
+            email_subject = data['email_subject']
+            email_content = data['email_content']
+            timestamp = data['timestamp']
 
-        db.session.add(email)
-        db.session.commit()
+            email = Email(
+                event_id=event_id,
+                email_subject=email_subject,
+                email_content=email_content,
+                timestamp=timestamp
+            )
 
-        return email, None
+            db.session.add(email)
+            db.session.commit()
+
+            return email, None
+        except Exception as e:
+            print(f"Error while creating email: {e}")
+            return None, f"Error while creating email: {e}"
+
+    @staticmethod
+    def get_email_list():
+        try:
+            emails = Email.query.all()
+            email_list = EmailSchema(many=True).dump(emails)
+
+            return email_list, None
+        except Exception as e:
+            print(f"Error while serializing email data: {e}")
+            return None, f"Error while serializing email data: {e}"

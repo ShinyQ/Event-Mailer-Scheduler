@@ -1,18 +1,30 @@
-from flask import Blueprint, request, jsonify
+import json
+
+from internal.utils.response import response_json
+from flask import Blueprint, request
 from internal.services.email_service import EmailService
 
 email_bp = Blueprint('email_bp', __name__)
 
 
-@email_bp.route('/save_email', methods=['POST'])
-def save_emails():
+@email_bp.route('/emails', methods=['POST'])
+def save_email():
     data = request.json
 
-    email, errors = EmailService.create_email(data)
-    if errors:
-       return jsonify(errors), 400
+    email, err = EmailService.create_email(data)
+    if err:
+        return response_json(email, 400, err)
 
     if not email:
-       return jsonify({"message": "Email creation failed"}), 500
+        return response_json(None, 500, "Email creation failed")
 
-    return jsonify({"message": "Email saved successfully", "email_id": email.id}), 201
+    return response_json(email.id, 200, "Email saved successfully")
+
+@email_bp.route('/emails', methods=['GET'])
+def get_emails():
+    emails, err = EmailService.get_email_list()
+
+    if err:
+       return response_json(emails, 200, err)
+
+    return response_json(emails, 200)

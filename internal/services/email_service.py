@@ -1,9 +1,7 @@
-from datetime import datetime
-
 from internal.models.email import Email
 from internal.schemas.email_schema import EmailSchema
 from internal.utils.db import db
-from internal.utils.mailer import send_email
+
 
 class EmailService:
     @staticmethod

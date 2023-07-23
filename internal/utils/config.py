@@ -1,4 +1,8 @@
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
+APP_NAME = os.environ.get("APP_NAME", "mailer")
 
 DB_HOST = os.environ.get("DB_HOST", "default_db_host")
 DB_DATABASE = os.environ.get("DB_DATABASE", "default_db_database")

@@ -1,35 +1,46 @@
+from datetime import datetime
+
 from flask import request
 from flask_restful import Resource
 
 from internal.services.email_recipient_service import EmailRecipientService
+from internal.schedulers.email_scheduler import EmailSchedulerTasks
 from internal.services.email_service import EmailService
-from internal.utils.response import response_json
 from internal.utils.mailer import send_email
+from internal.utils.response import response_json
 
+from flask_mail import Message
 class EmailController(Resource):
     def post(self):
-        email, err = EmailService.create_email(request.json)
-        if err:
-            return response_json(email, 400, err)
+        try:
 
-        if not email:
-            return response_json(email, 500, "Email creation failed")
+            email, err = EmailService.create_email(request.json)
+            if err:
+                return response_json(email, 400, err)
 
-        recipients, err = EmailRecipientService.get_recipient_list()
-        if err:
-            return response_json(recipients, 500, err)
+            if not email:
+                return response_json(email, 500, "Email creation failed")
 
-        if not recipients:
-            return response_json(recipients, 400, "No recipients data in database")
+            recipients, err = EmailRecipientService.get_recipient_list()
+            if err:
+                return response_json(recipients, 500, err)
 
-        email_list = [recipient['email'] for recipient in recipients]
+            if not recipients:
+                return response_json(recipients, 400, "No recipients data in database")
 
-        subject = "PyCon ID 2023"
-        recipients = email_list
-        body = "PyCon Hadir Kembali 🔥"
-        send_email(subject, recipients, body)
+            recipients = [recipient['email'] for recipient in recipients]
+            EmailSchedulerTasks.schedule_sending_mail(
+                id=email.id,
+                subject=email.email_subject,
+                body=email.email_content,
+                recipients=recipients,
+                send_at=email.email_send_at
+            )
 
-        return response_json(email.id, 200, "Email saved successfully")
+            return response_json(email.id, 200, "Email saved successfully")
+        except Exception as e:
+            print(e)
+            return response_json(None, 500, e)
 
     def get(self):
         emails, err = EmailService.get_email_list()

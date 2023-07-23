@@ -1,4 +1,5 @@
 from flask_mail import Mail, Message
+
 from internal.utils.config import (
     MAIL_SENDER,
     MAIL_SERVER,
@@ -25,14 +26,6 @@ class Mailer:
         app.config['MAIL_USE_TLS'] = MAIL_USE_TLS
         Mailer.mail = Mail(app)
 
-
-def send_email(subject, recipients, body):
+def send_email(message):
     with Mailer.mail.app.app_context():
-        message = Message(
-            subject=subject,
-            sender=MAIL_SENDER,
-            recipients=recipients,
-            body=body
-        )
-
         Mailer.mail.send(message)

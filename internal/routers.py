@@ -1,5 +1,5 @@
 from flask_restful import Api
-from internal.views.email_controller import EmailController
+from .views.email_controller import EmailController
 
 class Routers:
     api: Api = None

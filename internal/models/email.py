@@ -5,4 +5,6 @@ class Email(db.Model):
     event_id = db.Column(db.Integer, nullable=False)
     email_subject = db.Column(db.String(255), nullable=False)
     email_content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.TIMESTAMP, nullable=False)
+    email_send_at = db.Column(db.TIMESTAMP, nullable=False)
+    email_sent_at = db.Column(db.TIMESTAMP, nullable=True)
+    created_at = db.Column(db.TIMESTAMP, nullable=True, server_default=db.func.current_timestamp())

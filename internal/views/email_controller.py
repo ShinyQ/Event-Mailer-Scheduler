@@ -4,9 +4,8 @@ from flask import request
 from flask_restful import Resource
 
 from internal.services.email_recipient_service import EmailRecipientService
-from internal.schedulers.email_scheduler import EmailSchedulerTasks
+from internal.schedulers.email_scheduler import schedule_sending_mail
 from internal.services.email_service import EmailService
-from internal.utils.mailer import send_email
 from internal.utils.response import response_json
 
 from flask_mail import Message
@@ -29,7 +28,7 @@ class EmailController(Resource):
                 return response_json(recipients, 400, "No recipients data in database")
 
             recipients = [recipient['email'] for recipient in recipients]
-            EmailSchedulerTasks.schedule_sending_mail(
+            schedule_sending_mail(
                 id=email.id,
                 subject=email.email_subject,
                 body=email.email_content,

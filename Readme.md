@@ -30,7 +30,7 @@
           "timestamp": "2023-07-24 15:51"
         }
       ```
-    2. Get Schedules `GET` `/save_emails`
+    2. Get Schedules `GET` `/emails`
        Json Response:
        ```bash
         {
@@ -48,7 +48,7 @@
           ]
         }
        ```
-       
+
 ## Testing Result
 Run `poetry run python -m unittest discover -v tests`
 

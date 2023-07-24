@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://rawgit.com/moment/moment/2.2.1/min/moment.min.js"></script>
+    <title>Email List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 0;
+            margin: 5%;
+            justify-content: center;
+            align-items: center;
+            background: #ffde00;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 3%;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+        }
+
+        .form-container {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .table-container {
+            flex: 2;
+        }
+
+        h2 {
+            margin: 0 0 10px;
+        }
+
+        table {
+            font-size: 14px!important;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #ffde00;
+        }
+
+        tr:hover {
+            background-color: #ffde00;
+        }
+
+        form {
+            font-size: 14px!important;
+            display: flex;
+            flex-direction: column;
+        }
+
+        input,
+        textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            margin-top: 5px;
+            width: 90%
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #ffde00;
+            color: black!important;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #fce860;
+            color: black!important;
+        }
+
+        .form-separator{
+            margin-top:5%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h2>Schedule New Event</h2>
+
+            <form id="emailForm">
+                <div class="form-separator">
+                    <label for="event_id">Event ID:</label><br>
+                    <input type="text" id="event_id" name="event_id" required>
+                </div>
+                <div class="form-separator">
+                    <label for="email_subject">Email Subject:</label><br>
+                    <input type="text" id="email_subject" name="email_subject" required>
+                </div>
+                <div class="form-separator">
+                    <label for="email_content">Email Content:</label><br>
+                    <textarea id="email_content" name="email_content" rows="4" required></textarea>
+                </div>
+                <div class="form-separator">
+                    <label for="email_send_at">Email Send At:</label><br>
+                    <input id="date-input" type="datetime-local" id="email_send_at" name="email_send_at" required>
+                </div>
+                <div class="form-separator">
+                    <button type="submit">Schedule Email</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2>Email Event Scheduled</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event ID</th>
+                        <th>Email Subject</th>
+                        <th>Email Content</th>
+                        <th>Send At</th>
+                        <th>Sent At</th>
+                        <th>Created At</th>
+                    </tr>
+                </thead>
+                <tbody id="emailTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function formatDateTime(dateTimeStr) {
+                const options = {
+                    timeZone: "Asia/Singapore",
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: false,
+                };
+                return new Date(dateTimeStr).toLocaleString(options);
+            }
+
+            function fetchEmailData() {
+                fetch("http://localhost:5000/emails")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            const emailTable = document.getElementById("emailTable");
+                            const emailList = data.result;
+
+                            emailList.forEach(email => {
+                                const row = emailTable.insertRow();
+                                row.innerHTML = `
+                                    <td>${email.event_id}</td>
+                                    <td>${email.email_subject}</td>
+                                    <td>${email.email_content}</td>
+                                    <td>${formatDateTime(email.email_send_at)}</td>
+                                    <td>${formatDateTime(email.email_sent_at) || 'Not sent'}</td>
+                                    <td>${formatDateTime(email.created_at)}</td>
+                                `;
+                            });
+                        } else {
+                            console.error("Error fetching email data:", data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching email data:", error);
+                    });
+            }
+
+            function handleFormSubmission(event) {
+                event.preventDefault();
+    
+                const emailForm = document.getElementById("emailForm");
+                const formData = new FormData(emailForm);
+    
+                const event_id = formData.get("event_id");
+                const email_subject = formData.get("email_subject");
+                const email_content = formData.get("email_content");
+                const email_send_at  = new moment(formData.get("email_send_at"), "YYYY-MM-DDTHH:mm").utc().format("YYYY-MM-DD HH:mm");
+    
+                const emailData = {
+                    event_id,
+                    email_subject,
+                    email_content,
+                    email_send_at,
+                };
+    
+                emailForm.reset();
+    
+                fetch("http://localhost:5000/emails", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(emailData),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.code === 200) {
+                            const emailTable = document.getElementById("emailTable");
+                            emailTable.innerHTML = "";
+                            
+                            fetchEmailData();
+                        } else {
+                            console.error("Error scheduling email:", data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error scheduling email:", error);
+                    });
+            }
+    
+            const emailForm = document.getElementById("emailForm");
+            emailForm.addEventListener("submit", handleFormSubmission);
+
+            fetchEmailData();
+
+            const currentDate = new Date().toISOString().slice(0, 16);
+            document.getElementById("date-input").setAttribute("min", currentDate);
+        });
+    </script>
+</body>
+</html>

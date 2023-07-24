@@ -1,9 +1,19 @@
-from internal.models.email import Email
 from internal.schemas.email_schema import EmailSchema
+from internal.models.email import Email
 from internal.utils.db import db
 from datetime import datetime
 
 class EmailService:
+    @staticmethod
+    def get_email_list():
+        try:
+            emails = Email.query.all()
+            email_list = EmailSchema(many=True).dump(emails)
+
+            return email_list, None
+        except Exception as e:
+            return None, f"Error while serializing email data: {e}"
+        
     @staticmethod
     def create_email(data):
         try:
@@ -35,11 +45,16 @@ class EmailService:
             return None, f"Error while creating email: {e}"
 
     @staticmethod
-    def get_email_list():
+    def update_email_status(id):
         try:
-            emails = Email.query.all()
-            email_list = EmailSchema(many=True).dump(emails)
+            from internal.app import app
+            with app.app_context():
+                email = Email.query.get(id)
 
-            return email_list, None
+                if email is None:
+                    return None, "Email not found"
+
+                email.email_sent_at = datetime.utcnow()
+                db.session.commit()
         except Exception as e:
-            return None, f"Error while serializing email data: {e}"
+            print(e)

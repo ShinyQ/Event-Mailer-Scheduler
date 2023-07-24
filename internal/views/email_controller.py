@@ -26,6 +26,7 @@ class EmailController(Resource):
 
             recipients = [recipient['email'] for recipient in recipients]
             ok, message = EmailScheduler.schedule_sending_mail(
+                id=email.id,
                 subject=email.email_subject,
                 body=email.email_content,
                 recipients=recipients,
@@ -47,3 +48,18 @@ class EmailController(Resource):
             return response_json(emails, 500, err)
 
         return response_json(emails, 200)
+    
+    def put(self, email_id):
+        try:
+            email, err = EmailService.update_email_status(email_id)
+
+            if err:
+                return response_json(None, 500, err)
+
+            if not email:
+                return response_json(None, 404, "Email not found")
+
+            return response_json(email.id, 200, "Email status updated successfully")
+        except Exception as e:
+            print(e)
+            return response_json(None, 500, e)

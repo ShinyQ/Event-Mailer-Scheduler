@@ -1,6 +1,9 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_migrate import Migrate
+
 from .utils.mailer import Mailer
+from os import getcwd
 
 class App():
     app = None
@@ -8,11 +11,12 @@ class App():
 
 def create_app():
     modules = App()
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder=f"{getcwd()}/dashboard")
+
+    CORS(app, resources={r"/emails": {"origins": "*"}})
 
     modules.app = app
     modules.mailer = Mailer(app)
-    
     return modules
 
 

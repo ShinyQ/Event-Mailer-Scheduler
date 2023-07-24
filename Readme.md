@@ -11,12 +11,14 @@ The Email Scheduler is an application that allows you to automate your email del
 2. Run compose `docker-compose up --build`
 3. Follow steps manual installation from #3
 
-## Manual Installation'
+## Manual Installation
 1. Copy `.env.example` to `.env` 
 2. Install poetry `pip install poetry`
 3. Access poetry shell `poetry shell`
 4. Migrate DB `flask db upgrade`
 5. Run `flask run`
+6. Run `rq worker`
+7. Run `rqscheduler -i 1`
 
 ## Applications
 1. Access via dashboard on `{url}/dashboard`

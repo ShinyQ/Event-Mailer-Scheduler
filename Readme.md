@@ -1,4 +1,5 @@
 ## **Event Mail Scheduler**
+The Email Scheduler is an application that allows you to automate your email delivery to target recipients. It provide a web interface and API.
 
 ## Requirements
 - Python 3.11
@@ -17,10 +18,10 @@
 4. Migrate DB `flask db upgrade`
 5. Run `flask run`
 
-## Application
+## Applications
 1. Access via dashboard on `{url}/dashboard`
 2. Access via API
-   1. Create Send Mail Schedule `POST` `/emails`
+   1. Create Send Mail Schedule `POST` `{url}/emails`
       Json Body:
       ```json
         {
@@ -30,7 +31,7 @@
           "timestamp": "2023-07-24 15:51"
         }
       ```
-    2. Get Schedules `GET` `/emails`
+    2. Get Schedules `GET` `{url}/emails`
        Json Response:
        ```bash
         {
@@ -64,3 +65,23 @@ Ran 3 tests in 0.038s
 OK
 
 ```
+
+## Packages
+| Package            | Description                                           |
+|--------------------|-------------------------------------------------------|
+| Flask              | Micro web framework for building APIs                |
+| SQLAlchemy         | ORM for Python to work with databases                 |
+| Flask-Migrate      | Database migrations for Flask applications           |
+| python-dotenv      | Load environment variables from a .env file          |
+| Flask-SQLAlchemy   | Integration of SQLAlchemy with Flask                  |
+| Marshmallow        | Object serialization and validation                   |
+| PyMySQL            | MySQL database connector for Python                   |
+| Flask-Mail         | Email support for Flask applications                  |
+| Flask-RESTful      | Extension for creating RESTful APIs with Flask         |
+| Cryptography       | Cryptographic algorithms and protocols                |
+| Gunicorn           | WSGI HTTP Server for running Python apps              |
+| RQ                 | Simple Python library for queuing jobs                 |
+| RQ-Scheduler       | Scheduler extension for RQ                            |
+| Requests           | HTTP library for sending requests                     |
+| Flask-CORS         | Cross-Origin Resource Sharing (CORS) support           |
+| pytz               | Timezone library for Python                            |

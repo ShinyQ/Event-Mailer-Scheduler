@@ -1,7 +1,7 @@
 from internal.models.email import Email
 from internal.schemas.email_schema import EmailSchema
 from internal.utils.db import db
-
+from datetime import datetime
 
 class EmailService:
     @staticmethod
@@ -10,7 +10,11 @@ class EmailService:
             errors = EmailSchema().validate(data)
             if errors:
                 return None, errors
-
+               
+            email_send_at = datetime.strptime(data['email_send_at'], '%Y-%m-%d %H:%M:%S')  
+            if email_send_at < datetime.utcnow():
+               return None, "Schedule time for send email cannot be in the past"
+            
             event_id = data['event_id']
             email_subject = data['email_subject']
             email_content = data['email_content']

@@ -12,6 +12,7 @@ def create_app():
 
     modules.app = app
     modules.mailer = Mailer(app)
+    
     return modules
 
 

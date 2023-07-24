@@ -1,18 +1,15 @@
-from datetime import datetime
 
 from flask import request
 from flask_restful import Resource
 
 from internal.services.email_recipient_service import EmailRecipientService
-from internal.schedulers.email_scheduler import schedule_sending_mail
+from internal.schedulers.email_scheduler import EmailScheduler
 from internal.services.email_service import EmailService
 from internal.utils.response import response_json
 
-from flask_mail import Message
 class EmailController(Resource):
     def post(self):
         try:
-
             email, err = EmailService.create_email(request.json)
             if err:
                 return response_json(email, 400, err)
@@ -28,15 +25,17 @@ class EmailController(Resource):
                 return response_json(recipients, 400, "No recipients data in database")
 
             recipients = [recipient['email'] for recipient in recipients]
-            schedule_sending_mail(
-                id=email.id,
+            ok, message = EmailScheduler.schedule_sending_mail(
                 subject=email.email_subject,
                 body=email.email_content,
                 recipients=recipients,
                 send_at=email.email_send_at
             )
 
-            return response_json(email.id, 200, "Email saved successfully")
+            if not ok :
+                return response_json(None, 500, message)
+            
+            return response_json(email.id, 200, message)
         except Exception as e:
             print(e)
             return response_json(None, 500, e)

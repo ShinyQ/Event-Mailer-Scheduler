@@ -1,4 +1,5 @@
 from flask_mail import Mail, Message
+
 from internal.utils.config import (
     MAIL_SENDER,
     MAIL_SERVER,
@@ -14,7 +15,6 @@ class Mailer:
     def __init__(self, app=None):
         self.app = app
         if app is not None:
-            print("Not None")
             self.init_app(app)
 
     @staticmethod
@@ -25,6 +25,7 @@ class Mailer:
         app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
         app.config['MAIL_USE_TLS'] = MAIL_USE_TLS
         Mailer.mail = Mail(app)
+     
      
 def send_email(email_data):
     from internal.app import mailer

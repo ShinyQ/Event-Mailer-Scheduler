@@ -1,6 +1,6 @@
-from redis import Redis
-from rq import Queue
 from rq_scheduler import Scheduler
+from rq import Queue
+from redis import Redis
 
 from internal.utils.mailer import send_email
 
@@ -19,6 +19,6 @@ class EmailScheduler():
                     'recipient': recipient,
                 })
              
-            return None, "Email saved and scheduled successfully"
+            return True, "Email saved and scheduled successfully"
         except Exception as e:
-            return None, e
+            return False, e

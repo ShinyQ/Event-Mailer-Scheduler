@@ -11,7 +11,7 @@ class EmailService:
             if errors:
                 return None, errors
                
-            email_send_at = datetime.strptime(data['email_send_at'], '%Y-%m-%d %H:%M:%S')  
+            email_send_at = datetime.strptime(data['email_send_at'], '%Y-%m-%d %H:%M')  
             if email_send_at < datetime.utcnow():
                return None, "Schedule time for send email cannot be in the past"
             
